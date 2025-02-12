@@ -1,7 +1,7 @@
 import requests
 import time
 
-# ADB Node - Testing Phase Only: Do Not Use for Commercial Purposes
+# FORESTARMY - Testing Phase Only: Do Not Use for Commercial Purposes
 print("="*60)
 print("🌲 ADBNode × Gradient 🌲")
 print("⚠️  Testing Phase Only - Do Not Use for Commercial Purposes ⚠️")
@@ -46,15 +46,27 @@ else:
 
 def fetch_status():
     try:
-        # Pass the proxies to the requests.get() method if available
+        # Try making the request using the proxy, if available
         response = requests.get(url, headers=headers, proxies=proxies)
         if response.status_code == 200:
             data = response.json()
             print("✔️ Status Retrieved:", data)  # Tick symbol for successful response
         else:
             print(f"❌ Error: Status Code {response.status_code}")
-    except Exception as e:
-        print(f"❌ An error occurred: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Request failed: {e}")
+        print("🔄 Retrying without proxy...")
+
+        # Retry without the proxy
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                print("✔️ Status Retrieved (without proxy):", data)
+            else:
+                print(f"❌ Error: Status Code {response.status_code}")
+        except Exception as e:
+            print(f"❌ An error occurred without proxy: {e}")
 
 # Polling loop - fetches data every 10 seconds
 while True:
