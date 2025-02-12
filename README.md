@@ -27,7 +27,13 @@ nano bot.py
 
 ![Screenshot 2025-02-12 184357](https://github.com/user-attachments/assets/76a8b43d-c93c-40a0-a2b0-ca573b94ec37)
 
-4.run 
+4. If you want proxy but can't dedicated proxy
+   
+```bash
+nano proxy.txt
+```
+
+5.run 
 
 ```bash
 python or python3 bot.py
