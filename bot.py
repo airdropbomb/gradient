@@ -12,8 +12,29 @@ print("\nProudly Made By ADB Node (https://t.me/airdropbombnode)")
 print("👤 Developed by: itsmesatyavir\n")
 print("="*60)
 
-# Prompt user for Authorization token
-auth_token = "Please enter your Authorization token"
+# Function to read the Bearer token from data.txt
+def load_bearer_token():
+    try:
+        with open("data.txt", "r") as file:
+            token = file.readline().strip()  # Read the first line of the file for the Bearer token
+            return token
+    except Exception as e:
+        print(f"❌ Error loading Bearer token: {e}")
+        return None
+
+# Load Bearer token
+auth_token = load_bearer_token()
+
+if not auth_token:
+    print("❌ Bearer token not found. Please check your data.txt file.")
+    exit()
+
+# API endpoint and headers
+url = "https://api.gradient.network/api/status"
+headers = {
+    "Authorization": f"Bearer {auth_token}",
+    "Accept": "application/json",
+}
 
 # Load the proxy from the proxy.txt file
 def load_proxy():
@@ -24,13 +45,6 @@ def load_proxy():
     except Exception as e:
         print(f"❌ Error loading proxy: {e}")
         return None
-
-# API endpoint and headers
-url = "https://api.gradient.network/api/status"
-headers = {
-    "Authorization": f"Bearer {auth_token}",
-    "Accept": "application/json",
-}
 
 # Get the proxy from the file
 proxy = load_proxy()
