@@ -53,8 +53,8 @@ def fetch_status():
             print("✔️ Status Retrieved:", data)  # Tick symbol for successful response
         else:
             print(f"❌ Error: Status Code {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Request failed: {e}")
+    except requests.exceptions.RequestException:
+        # Skip the error message and directly retry without the proxy
         print("🔄 Retrying without proxy...")
 
         # Retry without the proxy
