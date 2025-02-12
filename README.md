@@ -20,6 +20,9 @@ cd gradient
 
 3. Confiuger file
 
+![Screenshot 2025-02-12 184052](https://github.com/user-attachments/assets/b7a9b8b9-2a1e-4a1f-b760-bb0ae0c175b8)
+
+
 ```bash
 nano bot.py
 ```
