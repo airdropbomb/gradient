@@ -21,9 +21,8 @@ cd gradient
 3. Confiuger file
 
 ```bash
-nano bot.py
+nano data.txt
 ```
-## auth-toekn = "Fill your bearer token"
 
 ![Screenshot 2025-02-12 184357](https://github.com/user-attachments/assets/76a8b43d-c93c-40a0-a2b0-ca573b94ec37)
 
