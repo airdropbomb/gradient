@@ -20,13 +20,12 @@ cd gradient
 
 3. Confiuger file
 
-![Screenshot 2025-02-12 184052](https://github.com/user-attachments/assets/b7a9b8b9-2a1e-4a1f-b760-bb0ae0c175b8)
-
-
 ```bash
 nano bot.py
 ```
 (Go to web > Network > stats > Copy Bearer Token
+
+![Screenshot 2025-02-12 184357](https://github.com/user-attachments/assets/76a8b43d-c93c-40a0-a2b0-ca573b94ec37)
 
 4.run 
 
