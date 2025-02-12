@@ -23,7 +23,7 @@ cd gradient
 ```bash
 nano bot.py
 ```
-(Go to web > Network > stats > Copy Bearer Token
+## auth-toekn = "Fill your bearer token"
 
 ![Screenshot 2025-02-12 184357](https://github.com/user-attachments/assets/76a8b43d-c93c-40a0-a2b0-ca573b94ec37)
 
