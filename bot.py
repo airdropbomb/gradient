@@ -1,7 +1,7 @@
 import requests
 import time
 
-# FORESTARMY - Testing Phase Only: Do Not Use for Commercial Purposes
+# ADB Node - Testing Phase Only: Do Not Use for Commercial Purposes
 print("="*60)
 print("🌲 ADBNode × Gradient 🌲")
 print("⚠️  Testing Phase Only - Do Not Use for Commercial Purposes ⚠️")
@@ -12,77 +12,75 @@ print("\nProudly Made By ADB Node (https://t.me/airdropbombnode)")
 print("👤 Developed by: itsmesatyavir\n")
 print("="*60)
 
-# Function to read the Bearer token from data.txt
-def load_bearer_token():
+# Function to read Bearer tokens from data.txt (each token on a new line)
+def load_bearer_tokens():
     try:
         with open("data.txt", "r") as file:
-            token = file.readline().strip()  # Read the first line of the file for the Bearer token
-            return token
+            tokens = file.readlines()  # Read all lines from the file
+            tokens = [token.strip() for token in tokens]  # Remove any extra spaces or newlines
+            return tokens
     except Exception as e:
-        print(f"❌ Error loading Bearer token: {e}")
-        return None
+        print(f"❌ Error loading Bearer tokens: {e}")
+        return []
 
-# Load Bearer token
-auth_token = load_bearer_token()
+# Function to read proxies from proxy.txt (each proxy on a new line)
+def load_proxies():
+    try:
+        with open("proxy.txt", "r") as file:
+            proxies = file.readlines()  # Read all lines from the file
+            proxies = [proxy.strip() for proxy in proxies]  # Clean up any extra spaces or newlines
+            return proxies
+    except Exception as e:
+        print(f"❌ Error loading proxies: {e}")
+        return []
 
-if not auth_token:
-    print("❌ Bearer token not found. Please check your data.txt file.")
+# Load Bearer tokens and proxies
+auth_tokens = load_bearer_tokens()
+proxies = load_proxies()
+
+if not auth_tokens or not proxies or len(auth_tokens) != len(proxies):
+    print("❌ Mismatch in the number of Bearer tokens and proxies. Please ensure you have the same number of tokens and proxies.")
     exit()
 
 # API endpoint and headers
 url = "https://api.gradient.network/api/status"
-headers = {
-    "Authorization": f"Bearer {auth_token}",
-    "Accept": "application/json",
-}
 
-# Load the proxy from the proxy.txt file
-def load_proxy():
-    try:
-        with open("proxy.txt", "r") as file:
-            proxy = file.readline().strip()  # Read the first proxy from the file
-            return proxy
-    except Exception as e:
-        print(f"❌ Error loading proxy: {e}")
-        return None
+def fetch_status(auth_token, proxy):
+    headers = {
+        "Authorization": f"Bearer {auth_token}",
+        "Accept": "application/json",
+    }
 
-# Get the proxy from the file
-proxy = load_proxy()
-
-# Setup proxies dictionary with authentication if proxy is provided
-if proxy:
-    proxies = {
+    proxies_dict = {
         "http": proxy,
         "https": proxy,
     }
-else:
-    proxies = None  # No proxy if not found
 
-def fetch_status():
     try:
-        # Try making the request using the proxy, if available
-        response = requests.get(url, headers=headers, proxies=proxies)
+        # Make the request using the specific proxy for the account
+        response = requests.get(url, headers=headers, proxies=proxies_dict)
         if response.status_code == 200:
             data = response.json()
-            print("✔️ Status Retrieved:", data)  # Tick symbol for successful response
+            print(f"✔️ Status Retrieved for token: {auth_token[:10]}...")  # Show only part of the token for privacy
         else:
-            print(f"❌ Error: Status Code {response.status_code}")
+            print(f"❌ Error: Status Code {response.status_code} for token: {auth_token[:10]}...")
     except requests.exceptions.RequestException:
         # Skip the error message and directly retry without the proxy
-        print("🔄 Retrying without proxy...")
+        print(f"🔄 Retrying without proxy for token: {auth_token[:10]}...")
 
         # Retry without the proxy
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 data = response.json()
-                print("✔️ Status Retrieved (without proxy):", data)
+                print(f"✔️ Status Retrieved (without proxy) for token: {auth_token[:10]}...")
             else:
-                print(f"❌ Error: Status Code {response.status_code}")
+                print(f"❌ Error: Status Code {response.status_code} for token: {auth_token[:10]}...")
         except Exception as e:
-            print(f"❌ An error occurred without proxy: {e}")
+            print(f"❌ An error occurred without proxy for token: {auth_token[:10]}... {e}")
 
-# Polling loop - fetches data every 10 seconds
+# Polling loop - fetches data for all tokens every 10 seconds
 while True:
-    fetch_status()
-    time.sleep(10)  # Wait 10 seconds before sending the next request
+    for auth_token, proxy in zip(auth_tokens, proxies):
+        fetch_status(auth_token, proxy)
+        time.sleep(10)  # Wait 10 seconds before sending the next request
