@@ -28,9 +28,7 @@ nano data.txt
 
 4. If you want proxy but can't dedicated proxy
    
-```bash
-nano proxy.txt
-```
+proxy not working..... don't use
 
 5.run 
 
