@@ -23,12 +23,15 @@ def load_bearer_tokens():
         print(f"❌ Error loading Bearer tokens: {e}")
         return []
 
-# Function to read proxies from proxy.txt
+# Function to read proxies from proxy.txt (optional)
 def load_proxies():
     try:
         with open("proxy.txt", "r") as file:
             proxies = [proxy.strip() for proxy in file.readlines()]
             return proxies
+    except FileNotFoundError:
+        print("⚠️ proxy.txt not found. Proceeding without proxies.")
+        return []
     except Exception as e:
         print(f"❌ Error loading proxies: {e}")
         return []
@@ -39,10 +42,8 @@ if not auth_tokens:
     print("❌ No tokens found in data.txt. Please check your file!")
     exit()
 
-# Load proxies
+# Load proxies (optional)
 proxies_list = load_proxies()
-if not proxies_list:
-    print("⚠️ No proxies found in proxy.txt. Proceeding without proxies.")
 
 # API endpoint
 url = "https://api.gradient.network/api/status"
@@ -54,7 +55,7 @@ def fetch_status(auth_token, proxies_list):
         "Accept": "application/json",
     }
 
-    # Select a random proxy if available
+    # Use proxy only if proxies_list is not empty
     proxy_dict = {}
     if proxies_list:
         proxy = random.choice(proxies_list)
@@ -63,9 +64,11 @@ def fetch_status(auth_token, proxies_list):
             "https": proxy
         }
         print(f"🌐 Using proxy: {proxy}")
+    else:
+        print("🌐 No proxy used.")
 
     try:
-        response = requests.get(url, headers=headers, proxies=proxy_dict, timeout=10)
+        response = requests.get(url, headers=headers, proxies=proxy_dict if proxy_dict else None, timeout=10)
         if response.status_code == 200:
             data = response.json()
             print("✔️ Status Retrieved:", data)  # ✅ Success message
