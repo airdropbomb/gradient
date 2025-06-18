@@ -30,7 +30,7 @@ if not auth_tokens:
     exit()
 
 # API endpoint
-url = "https://api.gradient.network/api/status"
+url = "https://api.gradient.network/api/point/status"
 
 # Function to fetch API status
 def fetch_status(auth_token):
