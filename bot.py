@@ -27,7 +27,7 @@ def load_bearer_tokens():
 def load_proxies():
     try:
         with open("proxy.txt", "r") as file:
-            proxies = [proxy.strip() for proxy in file.readlines()]
+            proxies = [proxy.strip() for proxy in file.readlines() if proxy.strip()]
             return proxies
     except FileNotFoundError:
         print("⚠️ proxy.txt not found. Proceeding without proxies.")
@@ -35,6 +35,24 @@ def load_proxies():
     except Exception as e:
         print(f"❌ Error loading proxies: {e}")
         return []
+
+# Validate proxy format
+def is_valid_proxy(proxy):
+    # Basic check for proxy format (e.g., http://username:password@ip:port or http://ip:port)
+    if not proxy:
+        return False
+    if not (proxy.startswith("http://") or proxy.startswith("https://") or proxy.startswith("socks5://")):
+        return False
+    parts = proxy.split("@")
+    if len(parts) == 2:  # With username:password
+        auth, ip_port = parts
+        if not (":" in ip_port and auth.count(":") == 1):
+            return False
+    elif len(parts) == 1:  # Without username:password
+        ip_port = parts[0]
+        if not ":" in ip_port:
+            return False
+    return True
 
 # Load Bearer tokens
 auth_tokens = load_bearer_tokens()
@@ -44,6 +62,10 @@ if not auth_tokens:
 
 # Load proxies (optional)
 proxies_list = load_proxies()
+# Filter valid proxies
+proxies_list = [proxy for proxy in proxies_list if is_valid_proxy(proxy)]
+if not proxies_list:
+    print("⚠️ No valid proxies found. Proceeding without proxies.")
 
 # API endpoint
 url = "https://api.gradient.network/api/status"
@@ -55,20 +77,29 @@ def fetch_status(auth_token, proxies_list):
         "Accept": "application/json",
     }
 
-    # Use proxy only if proxies_list is not empty
-    proxy_dict = {}
+    # Try with proxy if available, fallback to no proxy if it fails
     if proxies_list:
         proxy = random.choice(proxies_list)
         proxy_dict = {
             "http": proxy,
             "https": proxy
         }
-        print(f"🌐 Using proxy: {proxy}")
-    else:
-        print("🌐 No proxy used.")
-
+        print(f"🌐 Trying with proxy: {proxy}")
+        try:
+            response = requests.get(url, headers=headers, proxies=proxy_dict, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                print("✔️ Status Retrieved:", data)  # ✅ Success message
+                return
+            else:
+                print(f"❌ Error with proxy {proxy}: Status Code {response.status_code}")
+        except Exception as e:
+            print(f"❌ Proxy {proxy} failed: {e}. Falling back to no proxy.")
+    
+    # Fallback to no proxy
+    print("🌐 No proxy used.")
     try:
-        response = requests.get(url, headers=headers, proxies=proxy_dict if proxy_dict else None, timeout=10)
+        response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
             print("✔️ Status Retrieved:", data)  # ✅ Success message
